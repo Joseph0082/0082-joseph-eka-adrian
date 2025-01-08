@@ -1,0 +1,312 @@
+package javaapplication43;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.util.ArrayList;
+/**
+ *
+ * @author user
+ */
+public class JavaApplication43 {
+static ArrayList<String> namaP = new ArrayList<>();
+    static ArrayList<String> nmrP = new ArrayList<>();
+    static ArrayList<String> tang = new ArrayList<>();
+    static ArrayList<String> produk = new ArrayList<>();
+    static ArrayList<Double> biaya = new ArrayList<>();
+    static boolean isRunning = true;
+    static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+    /**
+     * @param args the command line arguments
+     */
+    
+    static void showMenu() throws IOException {
+        System.out.println("\n============ MENU ============");
+        System.out.println("1. Isi Data");
+        System.out.println("2. Lihat Laporan");
+        System.out.println("3. Edit Data");
+        System.out.println("4. Hapus Data");
+        System.out.println("5. Keluar");
+        System.out.println("6. Cetak Kwitansi");
+        System.out.print("PILIH MENU : ");
+        int Menu = Integer.parseInt(input.readLine());
+
+        switch (Menu) {
+            case 1:
+                insert();
+                break;
+            case 2:
+                laporan();
+                break;
+            case 3:
+                editData();
+                break;
+            case 4:
+                deleteData();
+                break;
+            case 5:
+                isRunning = false;
+                System.out.println("Program Selesai.");
+                break;
+            case 6:
+                printReceipt();
+                break;    
+            default:
+                System.out.println("Pilihan tidak valid.");
+        }
+    }
+
+    static void alldata() {
+        System.out.println("========= SEMUA DATA =========");
+        if (namaP.isEmpty()) {
+            System.out.println("Belum ada data.");
+        } else {
+            for (int i = 0; i < namaP.size(); i++) {
+                System.out.printf(" %-1d. Nama: %-14s|| Tanggal: %-11s|| No.HP: %-11s|| Produk: %-23s|| Biaya Rp. %-10.2f|\n",
+                        i + 1, 
+                        namaP.get(i),
+                        tang.get(i),
+                        nmrP.get(i),
+                        produk.get(i), 
+                        biaya.get(i)
+                        );
+            }
+        }
+    }
+
+    static void laporan() throws IOException {
+        System.out.println("\n=================== LAPORAN =======================");
+        System.out.println("============ FIFI SKIN CLINIC Pekalongan ============");
+        if (namaP.isEmpty()) {
+            System.out.println("Belum ada data.");
+        } else {
+            int totalData = namaP.size();
+            int dataPerHalaman = 3;
+            int totalHalaman = (int) Math.ceil((double) totalData / dataPerHalaman);
+            double totbiaya = 0;
+
+            for (int halaman = 0; halaman < totalHalaman; halaman++) {
+                double subtotbiaya = 0;
+                System.out.printf("\nHalaman %d/%d\n", halaman + 1, totalHalaman);
+                System.out.printf("+----+----------------+----------------+---------------+--------------------------+----------------+\n");
+                System.out.printf("| No |      Nama      |     Tanggal    |   Nomor HP    |         Produk           |   Harga Produk |\n");
+                System.out.printf("+----+----------------+----------------+---------------+--------------------------+----------------+\n");
+
+                for (int i = halaman * dataPerHalaman; i < Math.min((halaman + 1) * dataPerHalaman, totalData); i++) {
+                    subtotbiaya += biaya.get(i);
+                    System.out.printf("| %-2d | %-14s | %-14s | %-13s | %-24s | Rp.%-10.2f |\n",
+                            i + 1, 
+                            namaP.get(i),
+                            tang.get(i),
+                            nmrP.get(i),
+                            produk.get(i), 
+                            biaya.get(i)
+                    );
+                }
+
+                System.out.printf("+----+----------------+----------------+---------------+--------------------------+----------------+\n");
+                System.out.printf("|    |      SUBTOTAL HALAMAN INI                                                  | Rp.%-10.2f |\n",
+                        subtotbiaya);
+                System.out.printf("+----+----------------------------------------------------------------------------+----------------+\n");
+
+                totbiaya += subtotbiaya;
+
+                if (halaman < totalHalaman - 1) {
+                    System.out.print("Tekan ENTER untuk ke halaman berikutnya...");
+                    String p = input.readLine();
+                }
+            }
+
+            System.out.printf("|    |      TOTAL KESELURUHAN                                                     | Rp.%-10.2f |\n",
+                    totbiaya);
+            System.out.printf("+----+----------------------------------------------------------------------------+------------+"
+                    + "+\n");
+            System.out.println("Data sudah Habis!");
+        }
+    }
+
+    static void insert() throws IOException {
+        boolean ulang = true;
+        while (ulang) {
+            System.out.println("======== INPUT DATA ========");
+            System.out.print("Nama Pengunjung   : ");
+            String nama = input.readLine();
+            System.out.print("Tanggal Kunjungan : ");
+            String tanggal = input.readLine();
+            System.out.print("Masukkan No. HP : ");
+            String nmr = input.readLine();
+            System.out.println("Pilih Produk yang ingin dibeli."
+                    + "\n1. Serum Anti Aging"
+                    + "\n2. Face Toner"
+                    + "\n3. MICELLAR WATER"
+                    + "\n4. MASKER PEEL OFF MINT"
+                    + "\n5. SKIN CONDITIONING GEL"
+                    + "\n6. SUNSCREEN ACNE"
+                    + "\n7. SENSITIVE SKIN SERUM");
+
+            System.out.print("Pilih Produk (1-7) : ");
+            int kode = Integer.parseInt(input.readLine());
+            String product = product(kode);
+            double tunai = biaya(kode);
+
+            System.out.println("Nama produk        : " + product);
+            System.out.printf("Harga produk        : Rp.%-10.2f\n", tunai);
+
+            // Menyimpan data ke ArrayList
+            namaP.add(nama);
+            tang.add(tanggal);
+            nmrP.add(nmr);
+            produk.add(product);
+            biaya.add(tunai);
+            
+            System.out.println("Data berhasil ditambahkan.");
+            System.out.print("Ada Data lagi? [y/t] : ");
+            String choice = input.readLine().toLowerCase();
+            if (!choice.equals("y")) {
+                ulang = false;
+            }
+        }
+    }
+
+    static void editData() throws IOException {
+        boolean ulang = true;
+        while (ulang) {
+            alldata();
+            System.out.print("Pilih nomor data yang ingin di-edit: ");
+            int index = Integer.parseInt(input.readLine()) - 1;
+
+            if (index >= 0 && index < namaP.size()) {
+                System.out.print("Masukkan Nama Baru    : ");
+                namaP.set(index, input.readLine());
+                System.out.print("Masukkan Tanggal Baru : ");
+                tang.set(index, input.readLine());
+                System.out.print("Masukkan No. HP Baru  : ");
+                nmrP.set(index, input.readLine());
+                System.out.println("Pilih Produk yang ingin dibeli."
+                    + "\n1. Serum Anti Aging"
+                    + "\n2. Face Toner"
+                    + "\n3. MICELLAR WATER"
+                    + "\n4. MASKER PEEL OFF MINT"
+                    + "\n5. SKIN CONDITIONING GEL"
+                    + "\n6. SUNSCREEN ACNE"
+                    + "\n7. SENSITIVE SKIN SERUM");
+                System.out.print("Pilih Produk Baru (1-7): ");
+                int kode = Integer.parseInt(input.readLine());
+                produk.set(index, product(kode));
+                biaya.set(index, biaya(kode));
+                String product = product(kode);
+                double tunai = biaya(kode);
+
+                System.out.println("Nama Produk            : " + product);
+                System.out.printf("Harga Produk            : Rp.%-10.2f\n", tunai);
+
+                System.out.println("Data berhasil di-edit.");
+            } else {
+                System.out.println("Data tidak ditemukan.");
+            }
+
+            System.out.print("Edit Data lagi? [y/t]: ");
+            String choice = input.readLine().toLowerCase();
+            if (!choice.equals("y")) {
+                ulang = false;
+            }
+        }
+    }
+
+    static void deleteData() throws IOException {
+        boolean ulang = true;
+        while (ulang) {
+            alldata();
+            System.out.print("Pilih nomor data yang ingin dihapus : ");
+            int index = Integer.parseInt(input.readLine()) - 1;
+
+            if (index >= 0 && index < namaP.size()) {
+                namaP.remove(index);
+                tang.remove(index);
+                nmrP.remove(index);
+                produk.remove(index);
+                biaya.remove(index);
+                System.out.println("Data berhasil dihapus.");
+            } else {
+                System.out.println("Data tidak ditemukan.");
+            }
+
+            System.out.print("Hapus Data lagi? [y/t]: ");
+            String choice = input.readLine().toLowerCase();
+            if (!choice.equals("y")) {
+                ulang = false;
+            }
+        }
+    }
+
+    static double biaya(int kode) {
+        switch (kode) {
+            case 1: return 250000;
+            case 2: return 66000;
+            case 3: return 75000;
+            case 4: return 35000;
+            case 5: return 133500;
+            case 6: return 550000;
+            case 7: return 165000;
+            default: return 0;
+        }
+    }
+
+    static String product(int kode) {
+        switch (kode) {
+            case 1: return "Serum Anti Aging";
+            case 2: return "Face Toner";
+            case 3: return "MICELLAR WATER";
+            case 4: return "MASKER PEEL OFF MINT";
+            case 5: return "SKIN CONDITIONING GEL";
+            case 6: return "SUNSCREEN ACNE";
+            case 7: return "SENSITIVE SKIN SERUM";
+            default: return "Tidak diketahui";
+        }
+    }
+    
+    static void printReceipt() throws IOException {
+    System.out.println("======== CETAK KWITANSI ========");
+    if (namaP.isEmpty()) {
+        System.out.println("Belum ada data untuk dicetak.");
+        return;
+    }
+    
+    alldata();
+    System.out.print("Pilih nomor data untuk mencetak kwitansi: ");
+    int index = Integer.parseInt(input.readLine()) - 1;
+
+    if (index >= 0 && index < namaP.size()) {
+        System.out.println("===============================================");
+        System.out.println("                  FIFI SKIN CLINIC             ");
+        System.out.println("===============================================");
+        System.out.printf("Tanggal       : %s\n", tang.get(index));
+        System.out.printf("Nama          : %s\n", namaP.get(index));
+        System.out.printf("No. HP        : %s\n", nmrP.get(index));
+        System.out.println("------------------------------------------------");
+        System.out.printf("Produk        : %s\n", produk.get(index));
+        System.out.printf("Harga Produk  : Rp.%-10.2f\n", biaya.get(index));
+        System.out.println("------------------------------------------------");
+        System.out.printf("Total Biaya   : Rp.%-10.2f\n", biaya.get(index));
+        System.out.println("------------------------------------------------");
+        System.out.println("     Terima kasih atas kunjungan Anda!         ");
+        System.out.println("===============================================");
+    } else {
+        System.out.println("Data tidak ditemukan.");
+    }
+}
+    
+
+    public static void main(String[] args) throws IOException {
+        System.out.println("------- KLINIK KECANTIKAN --------");
+        System.out.println("==================================");
+        System.out.println("------- Joseph Eka Adrian --------");
+        System.out.println("==================================");
+        do {
+            showMenu();
+        } while (isRunning);
+        
+    
+        
+    }
+    
+}
