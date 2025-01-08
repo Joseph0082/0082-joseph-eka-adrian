@@ -1,5 +1,135 @@
-1. Menu
-2. Pilih menu
-3. Input data
-4. Menyimpan data
-﻿5. Output
+PROGRAM JavaApplication43
+
+DECLARE ArrayList namaP
+DECLARE ArrayList nmrP
+DECLARE ArrayList tang
+DECLARE ArrayList produk
+DECLARE ArrayList biaya
+DECLARE boolean isRunning = true
+DECLARE BufferedReader input
+
+FUNCTION showMenu
+    PRINT "============ MENU ============"
+    PRINT "1. Isi Data"
+    PRINT "2. Lihat Laporan"
+    PRINT "3. Edit Data"
+    PRINT "4. Hapus Data"
+    PRINT "5. Keluar"
+    PRINT "6. Cetak Kwitansi"
+    PRINT "PILIH MENU : "
+    READ Menu
+
+    SWITCH Menu
+        CASE 1: insert()
+        CASE 2: laporan()
+        CASE 3: editData()
+        CASE 4: deleteData()
+        CASE 5: isRunning = false
+                 PRINT "Program Selesai."
+        CASE 6: printReceipt()
+        DEFAULT: PRINT "Pilihan tidak valid."
+
+FUNCTION alldata
+    PRINT "========= SEMUA DATA ========="
+    IF namaP IS EMPTY THEN
+        PRINT "Belum ada data."
+    ELSE
+        FOR i FROM 0 TO SIZE(namaP) - 1
+            PRINT formatted data from namaP, tang, nmrP, produk, biaya
+
+FUNCTION laporan
+    PRINT "=================== LAPORAN ======================="
+    IF namaP IS EMPTY THEN
+        PRINT "Belum ada data."
+    ELSE
+        CALCULATE totalData, dataPerHalaman, totalHalaman
+        DECLARE totbiaya = 0
+
+        FOR halaman FROM 0 TO totalHalaman - 1
+            DECLARE subtotbiaya = 0
+            PRINT "Halaman", halaman + 1, "/", totalHalaman
+            PRINT table header
+
+            FOR i FROM halaman * dataPerHalaman TO MIN((halaman + 1) * dataPerHalaman, totalData) - 1
+                ADD biaya[i] TO subtotbiaya
+                PRINT formatted data from namaP, tang, nmrP, produk, biaya
+
+            PRINT subtotal and total
+
+            IF halaman < totalHalaman - 1 THEN
+                WAIT for user input
+
+FUNCTION insert
+    DECLARE ulang = true
+    WHILE ulang
+        PRINT "======== INPUT DATA ========"
+        READ nama, tanggal, nmr
+        PRINT product options
+        READ kode
+        SET product = product(kode)
+        SET tunai = biaya(kode)
+
+        PRINT product and price
+        ADD nama, tanggal, nmr, product, tunai TO respective ArrayLists
+        PRINT "Data berhasil ditambahkan."
+        READ choice
+        IF choice IS NOT "y" THEN
+            ulang = false
+
+FUNCTION editData
+    DECLARE ulang = true
+    WHILE ulang
+        CALL alldata()
+        READ index
+        IF index IS VALID THEN
+            READ new data for nama, tanggal, nmr
+            READ new product
+            UPDATE respective ArrayLists
+            PRINT "Data berhasil di-edit."
+        ELSE
+            PRINT "Data tidak ditemukan."
+        READ choice
+        IF choice IS NOT "y" THEN
+            ulang = false
+
+FUNCTION deleteData
+    DECLARE ulang = true
+    WHILE ulang
+        CALL alldata()
+        READ index
+        IF index IS VALID THEN
+            REMOVE data from ArrayLists
+            PRINT "Data berhasil dihapus."
+        ELSE
+            PRINT "Data tidak ditemukan."
+        READ choice
+        IF choice IS NOT "y" THEN
+            ulang = false
+
+FUNCTION biaya(kode)
+    SWITCH kode
+        RETURN corresponding price
+
+FUNCTION product(kode)
+    SWITCH kode
+        RETURN corresponding product name
+
+FUNCTION printReceipt
+    PRINT "======== CETAK KWITANSI ========"
+    IF namaP IS EMPTY THEN
+        PRINT "Belum ada data untuk dicetak."
+        RETURN
+    CALL alldata()
+    READ index
+    IF index IS VALID THEN
+        PRINT receipt details
+    ELSE
+        PRINT "Data tidak ditemukan."
+
+FUNCTION main
+    PRINT "------- KLINIK KECANTIKAN --------"
+    DO
+        CALL showMenu()
+    WHILE isRunning
+
+END PROGRAM
